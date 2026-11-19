@@ -287,12 +287,23 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
 .ruler .tick.m { background: var(--tick-m); }
 .ruler .tick.l { background: var(--ink-2); }
 .ruler .pointer { position: absolute; top: 0; bottom: 4px; width: 2px; margin-left: -1px; background: var(--accent); border-radius: 1px; box-shadow: 0 0 0 3px var(--accent-soft); }
-.labels { margin-top: auto; }
-.scale-note { margin-top: 12px; margin-bottom: auto; padding-bottom: 16px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--muted); }
+.bands { position: relative; height: 38px; margin-bottom: 14px; }
+.band { position: absolute; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2); font-size: 10.5px; color: var(--muted); transition: border-color .15s, background .15s, color .15s; }
+.band em { font-style: normal; font-size: 10px; color: var(--muted); }
+.band span { font-weight: 500; }
+.band.std { left: 8.333%; width: 41.667%; }
+.band.high { left: 50%; width: 41.667%; }
+.band.on { border-color: var(--accent); background: var(--accent-soft); }
+.band.on span { color: var(--ink); }
+.lstats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.lstat { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); display: flex; flex-direction: column; gap: 4px; }
+.lstat span { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.lstat b { font: 500 15px var(--mono); color: var(--ink); }
+.scale-note { margin-top: 12px; padding-bottom: 14px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--muted); }
 
 /* CBS */
 .t-cbs { grid-area: cbs; display: flex; flex-direction: column; }
-.cbs-body { flex: 1; display: grid; grid-template-columns: .8fr 1.4fr; grid-template-rows: auto 1fr; align-items: center; padding: 14px 16px 14px; gap: 10px 12px; transition: opacity .2s; }
+.cbs-body { flex: 1; display: grid; grid-template-columns: .8fr 1.4fr; grid-template-rows: 1fr auto; align-items: center; padding: 14px 16px 14px; gap: 10px 12px; transition: opacity .2s; }
 .cbs-body svg.diagram { max-width: 76px; margin-inline: auto; }
 .record { grid-column: 1 / -1; align-self: end; border-top: 1px solid var(--line); padding-top: 12px; }
 .record h3 { margin: 0 0 6px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
@@ -305,7 +316,7 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
 .rrow.miss dd { color: var(--faint); font-family: var(--font); }
 .t-cbs.off .cbs-body { opacity: .5; }
 .t-cbs.off .field { pointer-events: none; }
-.fields { display: flex; flex-direction: column; gap: 6px; }
+.fields { display: flex; flex-direction: column; justify-content: space-between; align-self: stretch; gap: 6px; }
 .field { display: block; width: 100%; text-align: left; font-size: 9.5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel-2); color: var(--muted); transition: color .15s, border-color .15s, background .15s; }
 .field:hover { color: var(--ink-2); border-color: var(--line-2); }
 .field.on { color: var(--ink); border-color: var(--accent); background: var(--accent-soft); }
@@ -474,6 +485,15 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
             <div class="pointer" id="pointer"></div>
           </div>
           <div class="scale-note"><span>Drag the ruler or use arrow keys</span></div>
+          <div class="bands" aria-hidden="true">
+            <div class="band std" id="bandStd"><span>Standard band</span><em>10,000 to 20,000</em></div>
+            <div class="band high" id="bandHigh"><span>High band</span><em>Full KYC above 20,000</em></div>
+          </div>
+          <div class="lstats">
+            <div class="lstat"><span>Selected limit</span><b id="sLimit">20,000</b></div>
+            <div class="lstat"><span>Headroom to ceiling</span><b id="sHead">10,000</b></div>
+            <div class="lstat"><span>Share of ceiling</span><b id="sShare">67%</b></div>
+          </div>
           <div class="limit-foot">
             <div class="rules">
               <h3>Why this limit <span title="Confirm thresholds with your compliance team">Draft</span></h3>
@@ -645,6 +665,11 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
     ruler.setAttribute('aria-valuetext', value.toLocaleString('en-US'));
     Object.keys(labelEls).forEach(function (k) { labelEls[k].classList.toggle('hit', +k === value); });
     document.getElementById('ruleKyc').classList.toggle('hit', value > 20000);
+    document.getElementById('bandStd').classList.toggle('on', value <= 20000);
+    document.getElementById('bandHigh').classList.toggle('on', value > 20000);
+    document.getElementById('sLimit').textContent = value.toLocaleString('en-US');
+    document.getElementById('sHead').textContent = (HI - value).toLocaleString('en-US');
+    document.getElementById('sShare').textContent = Math.round(value / HI * 100) + '%';
     document.getElementById('limitMsg').innerHTML = 'Current limit <b>' + value.toLocaleString('en-US') + '</b> is in the ' + (value > 20000 ? 'high band: full KYC required.' : 'standard band: no extra checks.');
   }
   function fromEvent(e) {
