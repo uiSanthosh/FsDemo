@@ -1,0 +1,656 @@
+<title>BestBank Program Console</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: window = FSS navy sidebar + content column (top bar, bordered bento panel). Light is the default, dark mirrors the original screenshot. */
+:root {
+  --bg: #eceef3;
+  --window: #ffffff;
+  --glow: rgba(217, 45, 58, .10);
+  --panel: #ffffff;
+  --panel-2: #f7f7f9;
+  --main-a: #ffffff;
+  --main-b: #fbfbfc;
+  --ink: #17171c;
+  --ink-2: #4a4a53;
+  --muted: #9a9aa5;
+  --faint: #c9c9d1;
+  --line: #e4e4e9;
+  --line-2: #d6d6dd;
+  --accent: #d92d3a;
+  --accent-soft: rgba(217, 45, 58, .12);
+  --chip-bg: #ffffff;
+  --chip-off: rgba(20, 20, 30, .04);
+  --card-bg: radial-gradient(120% 90% at 0% 0%, #ffffff 0%, #f2f2f5 55%, #ebebf0 100%);
+  --card-text: #c4c4cd;
+  --hatch-a: #f3f3f6;
+  --hatch-b: #dcdce2;
+  --node-fill: #ffffff;
+  --sw-off: #e3e3e8;
+  --tick-m: #b4b4be;
+  --shadow: 0 30px 60px -30px rgba(20, 20, 30, .25), 0 2px 6px rgba(20, 20, 30, .05);
+
+  --nav-bg: #fbfbfc;
+  --nav-ink: #17171c;
+  --nav-muted: #6e6e78;
+  --nav-line: #e4e4e9;
+  --nav-hover: rgba(20, 20, 30, .04);
+  --nav-accent: #d92d3a;
+  --nav-sel: linear-gradient(90deg, rgba(217,45,58,0), rgba(217,45,58,.11));
+
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-nav: "Outfit", "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #030304;
+    --window: #09090b;
+    --glow: rgba(190, 32, 32, .30);
+    --panel: #0e0e11;
+    --panel-2: #141418;
+    --main-a: #0b0b0d;
+    --main-b: #08080a;
+    --ink: #f1f1f4;
+    --ink-2: #b9b9c2;
+    --muted: #6b6b75;
+    --faint: #3b3b43;
+    --line: #25252b;
+    --line-2: #33333b;
+    --accent: #e5333f;
+    --accent-soft: rgba(229, 51, 63, .18);
+    --chip-bg: #18181c;
+    --chip-off: #111114;
+    --card-bg: radial-gradient(130% 100% at 0% 0%, #2a0f12 0%, #111114 55%, #0b0b0d 100%);
+    --card-text: #4d3a3d;
+    --hatch-a: #17171b;
+    --hatch-b: #2a2a31;
+    --node-fill: #0e0e11;
+    --sw-off: #2a2a30;
+    --tick-m: #55555f;
+    --shadow: 0 30px 70px -30px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255,255,255,.02);
+    --nav-bg: #101013;
+    --nav-ink: #f4f4f7;
+    --nav-muted: #a2a2ad;
+    --nav-line: rgba(255, 255, 255, .07);
+    --nav-hover: rgba(255, 255, 255, .04);
+    --nav-accent: #e5333f;
+    --nav-sel: linear-gradient(90deg, rgba(229,51,63,0), rgba(229,51,63,.18));
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #030304;
+  --window: #09090b;
+  --glow: rgba(190, 32, 32, .30);
+  --panel: #0e0e11;
+  --panel-2: #141418;
+  --main-a: #0b0b0d;
+  --main-b: #08080a;
+  --ink: #f1f1f4;
+  --ink-2: #b9b9c2;
+  --muted: #6b6b75;
+  --faint: #3b3b43;
+  --line: #25252b;
+  --line-2: #33333b;
+  --accent: #e5333f;
+  --accent-soft: rgba(229, 51, 63, .18);
+  --chip-bg: #18181c;
+  --chip-off: #111114;
+  --card-bg: radial-gradient(130% 100% at 0% 0%, #2a0f12 0%, #111114 55%, #0b0b0d 100%);
+  --card-text: #4d3a3d;
+  --hatch-a: #17171b;
+  --hatch-b: #2a2a31;
+  --node-fill: #0e0e11;
+  --sw-off: #2a2a30;
+  --tick-m: #55555f;
+  --shadow: 0 30px 70px -30px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255,255,255,.02);
+  --nav-bg: #101013;
+  --nav-ink: #f4f4f7;
+  --nav-muted: #a2a2ad;
+  --nav-line: rgba(255, 255, 255, .07);
+  --nav-hover: rgba(255, 255, 255, .04);
+  --nav-accent: #e5333f;
+  --nav-sel: linear-gradient(90deg, rgba(229,51,63,0), rgba(229,51,63,.18));
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 12px;
+  padding-block: 24px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  transition: background .25s;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, [tabindex]:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.window {
+  max-width: 1280px;
+  margin: 0 auto;
+  background: radial-gradient(60% 50% at 40% 0%, var(--glow), transparent 70%), var(--window);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 244px minmax(0, 1fr);
+  gap: 18px;
+}
+
+/* ---------- FSS sidebar ---------- */
+.sidebar {
+  background: var(--nav-bg); border: 1px solid var(--nav-line);
+  color: var(--nav-ink);
+  font-family: var(--font-nav);
+  border-radius: 12px;
+  display: flex; flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+.sb-head { display: flex; align-items: center; gap: 12px; padding: 20px 16px 16px; border-bottom: 1px solid var(--nav-line); }
+.logo { display: flex; flex-direction: column; align-items: flex-start; line-height: 1; flex: none; }
+.logo b { font-family: var(--font-nav); font-weight: 700; font-size: 22px; letter-spacing: -.01em; color: var(--nav-ink); }
+.logo small { font-size: 5.4px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; background: var(--nav-ink); color: var(--nav-bg); padding: 1px 3px; margin-top: 1px; white-space: nowrap; }
+.org { font-size: 13px; font-weight: 500; line-height: 1.25; }
+
+.sb-nav { padding: 12px 0 8px; display: flex; flex-direction: column; flex: 1; }
+.sb-item {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  padding: 13px 18px; border: 0; background: none; text-align: left; text-decoration: none; color: var(--nav-ink);
+  font: 500 12.5px/1.2 var(--font-nav);
+}
+.sb-item:hover { background: var(--nav-hover); }
+.sb-item .lbl { flex: 1; }
+.chev { width: 12px; height: 12px; stroke: var(--nav-muted); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; flex: none; margin-right: 4px; }
+.sb-item[aria-expanded="true"] .chev { transform: rotate(90deg); }
+.sub { display: flex; flex-direction: column; overflow: hidden; }
+.sub[hidden] { display: none !important; }
+.sub a {
+  position: relative; display: block; padding: 13px 18px 13px 34px; color: var(--nav-muted); text-decoration: none; font-size: 12.5px; font-weight: 500;
+}
+.sub a:hover { color: var(--nav-ink); }
+.sub a[aria-current="page"] { color: var(--nav-ink); font-weight: 600; background: var(--nav-sel); margin-block: 4px; }
+.sub a[aria-current="page"]::after { content: ""; position: absolute; right: 0; top: 4px; bottom: 4px; width: 4px; border-radius: 3px 0 0 3px; background: var(--nav-accent); box-shadow: 0 0 10px rgba(229,51,63,.55); }
+.sb-foot { border-top: 1px solid var(--nav-line); padding: 14px 12px; font-size: 10.5px; color: var(--nav-muted); text-align: center; }
+
+/* ---------- content column ---------- */
+.content { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 6px 0; }
+.brand { font-weight: 600; font-size: 15px; letter-spacing: .06em; }
+.tools { display: flex; align-items: center; gap: 12px; }
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9px;
+  background: var(--panel); border: 1px solid var(--line); color: var(--ink-2); padding: 0; transition: border-color .15s, color .15s;
+}
+.icon-btn:hover { border-color: var(--line-2); color: var(--ink); }
+.icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.menu-btn { display: none; }
+.dots { display: flex; gap: 8px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--faint); }
+.dots i:last-child { background: var(--ink-2); }
+
+.widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.widget { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.w-k { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.w-v { font-size: 20px; font-weight: 600; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+.w-v.mono { font-family: var(--mono); font-weight: 500; }
+.w-s { font-size: 10.5px; color: var(--muted); }
+.pip { width: 8px; height: 8px; border-radius: 50%; background: #2fa66a; box-shadow: 0 0 0 3px rgba(47, 166, 106, .2); flex: none; }
+
+.main {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, var(--main-a), var(--main-b));
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 1.13fr 1fr .94fr;
+  grid-template-areas: "card config hsm" "limit limit cbs";
+  gap: 24px;
+}
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.tile h2 {
+  margin: 0; padding: 14px 16px 13px;
+  font-size: 10.5px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+
+/* card */
+.t-card { grid-area: card; overflow: hidden; background: var(--card-bg); min-height: 172px; display: flex; flex-direction: column; justify-content: space-between; }
+.cardtop { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 16px 0; }
+.visa { font-weight: 600; font-style: italic; font-size: 19px; letter-spacing: .02em; color: var(--card-text); }
+.cardbrand { font-weight: 600; font-size: 14px; letter-spacing: .06em; color: var(--card-text); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 16px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border-radius: 6px;
+  background: var(--chip-bg); border: 1px solid var(--line); color: var(--ink); font-size: 10px;
+  transition: border-color .15s, box-shadow .15s, color .15s;
+}
+.chip svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+.chip:hover:not(.off) { border-color: var(--ink-2); }
+.chip.off { background: var(--chip-off); color: var(--muted); border-color: transparent; }
+.chip.flash { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* toggles */
+.t-config { grid-area: config; }
+.rows { padding: 6px 16px 10px; display: flex; flex-direction: column; }
+.row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; }
+.row span { color: var(--muted); font-size: 11px; transition: color .2s; }
+.row.on span { color: var(--ink); }
+.sw { width: 28px; height: 16px; border-radius: 9px; background: var(--sw-off); border: 0; padding: 0; position: relative; flex: none; transition: background .2s; }
+.sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.35); transition: transform .2s; }
+.sw[aria-checked="true"] { background: var(--accent); }
+.sw[aria-checked="true"]::after { transform: translateX(12px); }
+
+/* HSM + CBS svg theming */
+.t-hsm { grid-area: hsm; display: flex; flex-direction: column; }
+.hsm-body { flex: 1; padding: 6px 8px 8px; display: flex; align-items: center; }
+svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
+.d-ring { fill: var(--panel-2); stroke: var(--line); }
+.d-ring2 { fill: var(--panel); stroke: var(--line-2); }
+.d-ink { stroke: var(--ink); fill: none; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; }
+.path { fill: none; stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.path.on { stroke: var(--accent); }
+.x-bg { fill: var(--panel); stroke: var(--ink); stroke-width: 1; }
+.x-mark { stroke: var(--ink); stroke-width: 1; fill: none; }
+.hsm-node { cursor: pointer; }
+.hsm-node rect { fill: var(--hatch-a); stroke: var(--line); }
+.hsm-node text { font-family: var(--font); font-size: 9px; fill: var(--muted); }
+.hsm-node.on rect { fill: var(--node-fill); stroke: var(--accent); }
+.hsm-node.on text { fill: var(--ink); }
+.hsm-node:focus-visible rect { stroke-width: 2; }
+.dot { fill: var(--muted); }
+.dot.on { fill: var(--accent); }
+
+/* limit */
+.t-limit { grid-area: limit; display: flex; flex-direction: column; }
+.readout { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0; text-transform: none; }
+.ruler-wrap { padding: 20px 16px 16px; flex: 1; display: flex; flex-direction: column; }
+.limit-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); }
+.rules h3 { margin: 0 0 8px; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.rules ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 22px; }
+.rules li { position: relative; padding-left: 11px; font-size: 10.5px; line-height: 1.45; color: var(--muted); }
+.rules li::before { content: ""; position: absolute; left: 0; top: .55em; width: 4px; height: 4px; border-radius: 50%; background: var(--faint); }
+.rules li b { color: var(--ink); font-weight: 500; }
+.rules li.hit::before { background: var(--accent); }
+.rules li.hit b { color: var(--accent); }
+.limit-note { margin: 6px 0 0; font-size: 10px; color: var(--muted); }
+@media (max-width: 600px) { .rules ul { grid-template-columns: 1fr; } }
+.limit-msg { margin: 10px 0 0; font-size: 10.5px; color: var(--ink-2); }
+.limit-msg b { color: var(--ink); font: 500 10.5px var(--mono); }
+.labels { position: relative; height: 22px; font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+.labels span { position: absolute; top: 0; transform: translateX(-50%); transition: color .15s; letter-spacing: .02em; }
+.labels span.hit { color: var(--accent); }
+.ruler { position: relative; height: 46px; touch-action: none; cursor: ew-resize; user-select: none; margin-top: 4px; }
+.ruler .tick { position: absolute; top: 10px; width: 1px; background: var(--faint); transform: translateX(-.5px); }
+.ruler .tick.m { background: var(--tick-m); }
+.ruler .tick.l { background: var(--ink-2); }
+.ruler .pointer { position: absolute; top: 0; bottom: 4px; width: 2px; margin-left: -1px; background: var(--accent); border-radius: 1px; box-shadow: 0 0 0 3px var(--accent-soft); }
+.scale-note { margin-top: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--muted); }
+
+/* CBS */
+.t-cbs { grid-area: cbs; display: flex; flex-direction: column; }
+.cbs-body { flex: 1; display: grid; grid-template-columns: .7fr 1.45fr; align-items: center; padding: 8px 14px 12px 6px; gap: 6px; transition: opacity .2s; }
+.t-cbs.off .cbs-body { opacity: .5; }
+.t-cbs.off .field { pointer-events: none; }
+.fields { display: flex; flex-direction: column; gap: 8px; }
+.field { display: block; width: 100%; text-align: left; font-size: 9.5px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel-2); color: var(--muted); transition: color .15s, border-color .15s, background .15s; }
+.field:hover { color: var(--ink-2); border-color: var(--line-2); }
+.field.on { color: var(--ink); border-color: var(--accent); background: var(--accent-soft); }
+.field:not(.on) i, .t-cbs.off i { display: none; }
+.field i { display: inline-block; width: 1px; height: 10px; background: var(--accent); vertical-align: -1px; margin-left: 2px; animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.cbs-txt { font: 600 11px var(--font); fill: var(--ink); letter-spacing: .5px; }
+.cbs-line { stroke: var(--line); }
+.cbs-dia { fill: var(--panel); stroke: var(--line-2); }
+.cbs-dot { fill: var(--ink); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 960px) {
+  .window { grid-template-columns: 1fr; padding: 10px; gap: 12px; }
+  .menu-btn { display: inline-flex; }
+  .sidebar { display: none; }
+  .window.menu-open .sidebar { display: flex; }
+  .main { grid-template-columns: 1fr 1fr; grid-template-areas: "card card" "config hsm" "limit limit" "cbs cbs"; padding: 14px; gap: 16px; }
+}
+@media (max-width: 600px) {
+  .main { grid-template-columns: 1fr; grid-template-areas: "card" "config" "hsm" "limit" "cbs"; }
+  .labels { font-size: 10px; }
+  .dots { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="window" id="win">
+  <aside class="sidebar" id="sidebar" aria-label="Primary">
+    <div class="sb-head">
+      <div class="logo"><b>FSS</b><small>Powering Payments</small></div>
+      <div class="org">Financial Software Systems</div>
+    </div>
+
+    <nav class="sb-nav">
+      <a class="sb-item" href="#dashboard">
+        <span class="lbl">Dashboard</span>
+      </a>
+
+      <button class="sb-item" type="button">
+        <span class="lbl">Administration</span>
+        <svg class="chev" viewBox="0 0 12 12"><path d="M4.5 2.5L8 6l-3.5 3.5"/></svg>
+      </button>
+
+      <button class="sb-item" type="button" id="setupBtn" aria-expanded="true" aria-controls="setupSub">
+        <span class="lbl">Setup</span>
+        <svg class="chev" viewBox="0 0 12 12"><path d="M4.5 2.5L8 6l-3.5 3.5"/></svg>
+      </button>
+      <div class="sub" id="setupSub">
+        <a href="#institution">Institution</a>
+        <a href="#switch">Switch configuration</a>
+        <a href="#hsm">HSM</a>
+        <a href="#program" aria-current="page">Program</a>
+      </div>
+
+      <button class="sb-item" type="button">
+        <span class="lbl">Card Issuance</span>
+        <svg class="chev" viewBox="0 0 12 12"><path d="M4.5 2.5L8 6l-3.5 3.5"/></svg>
+      </button>
+
+      <button class="sb-item" type="button">
+        <span class="lbl">Non personalized cards</span>
+        <svg class="chev" viewBox="0 0 12 12"><path d="M4.5 2.5L8 6l-3.5 3.5"/></svg>
+      </button>
+
+      <button class="sb-item" type="button">
+        <span class="lbl">Scheduler</span>
+        <svg class="chev" viewBox="0 0 12 12"><path d="M4.5 2.5L8 6l-3.5 3.5"/></svg>
+      </button>
+
+      <button class="sb-item" type="button">
+        <span class="lbl">Card Management</span>
+        <svg class="chev" viewBox="0 0 12 12"><path d="M4.5 2.5L8 6l-3.5 3.5"/></svg>
+      </button>
+
+      <a class="sb-item" href="#files">
+        <span class="lbl">Files</span>
+      </a>
+
+      <a class="sb-item" href="#reports">
+        <span class="lbl">Reports</span>
+      </a>
+    </nav>
+
+    <div class="sb-foot">&copy; 2026 FSS Platform. All rights reserved.</div>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Toggle navigation" aria-expanded="false">
+          <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+        </button>
+        <div class="brand">BESTBANK</div>
+      </div>
+      <div class="tools">
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch to dark mode" title="Switch theme"></button>
+      </div>
+    </header>
+
+    <section class="widgets" aria-label="Program summary" aria-live="polite">
+      <div class="widget"><span class="w-k">Program status</span><b class="w-v"><i class="pip"></i>Active</b><span class="w-s">VISA &middot; BESTBANK</span></div>
+      <div class="widget"><span class="w-k">Daily limit</span><b class="w-v mono" id="wLimit">20,000</b><span class="w-s">Configured transaction limit</span></div>
+      <div class="widget"><span class="w-k">Active HSM</span><b class="w-v" id="wHsm">HSM 2</b><span class="w-s" id="wHsmSub">HSM 1 on standby</span></div>
+      <div class="widget"><span class="w-k">Configurations on</span><b class="w-v" id="wCfg">1 / 4</b><span class="w-s">of 50+ available options</span></div>
+      <div class="widget"><span class="w-k">CBS fields</span><b class="w-v" id="wCbs">4 / 5</b><span class="w-s" id="wCbsSub">Auto fetch on</span></div>
+    </section>
+
+    <main class="main">
+      <section class="tile t-card" aria-label="Card actions">
+        <div class="cardtop"><span class="visa">VISA</span><span class="cardbrand">BESTBANK</span></div>
+        <div class="chips">
+          <button class="chip off" type="button"><svg viewBox="0 0 12 12"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5"/><path d="M3.5 6h5"/></svg>Temporary Card Block</button>
+          <button class="chip" type="button"><svg viewBox="0 0 12 12"><rect x="1.5" y="1.5" width="9" height="9" rx="1.5"/><path d="M4.5 4l3 2-3 2z"/></svg>Account Closure</button>
+          <button class="chip" type="button"><svg viewBox="0 0 12 12"><path d="M2 10h8M6 8V2M3.5 4.5L6 2l2.5 2.5"/></svg>Upgrade</button>
+          <button class="chip off" type="button"><svg viewBox="0 0 12 12"><rect x="1.5" y="3" width="9" height="6" rx="1"/><path d="M3.5 6h2"/></svg>Pin Regeneration</button>
+          <button class="chip off" type="button"><svg viewBox="0 0 12 12"><path d="M3 1.5h4l2 2v7H3z"/><path d="M4.5 6h3M4.5 8h3"/></svg>Card Hotlist</button>
+        </div>
+      </section>
+
+      <section class="tile t-config" aria-labelledby="cfg-h">
+        <h2 id="cfg-h">50+ Program Configurations</h2>
+        <div class="rows">
+          <div class="row"><span>Has Virtual Card Support</span><button class="sw" role="switch" aria-checked="false" aria-label="Has Virtual Card Support"></button></div>
+          <div class="row"><span>Has NCMC Support</span><button class="sw" role="switch" aria-checked="true" aria-label="Has NCMC Support"></button></div>
+          <div class="row"><span>Has Photo Card Support</span><button class="sw" role="switch" aria-checked="false" aria-label="Has Photo Card Support"></button></div>
+          <div class="row"><span>Upgrade Configuration</span><button class="sw" role="switch" aria-checked="false" aria-label="Upgrade Configuration"></button></div>
+        </div>
+      </section>
+
+      <section class="tile t-hsm" aria-labelledby="hsm-h">
+        <h2 id="hsm-h">Intelligent HSM Rerouting</h2>
+        <div class="hsm-body">
+          <svg class="diagram" viewBox="0 0 240 130" role="group" aria-label="Traffic routed from the bank to an HSM. Select HSM 1 or HSM 2 to reroute.">
+            <circle class="d-ring" cx="42" cy="68" r="31"/>
+            <circle class="d-ring2" cx="42" cy="68" r="22"/>
+            <g class="d-ink" transform="translate(32 58)"><path d="M10 1.5L1.5 6.5h17z"/><path d="M3.5 8.5v7M8 8.5v7M12 8.5v7M16.5 8.5v7M1.5 17.5h17"/></g>
+            <path class="path" id="p1" d="M76 68 L121 68 L170 32"/>
+            <path class="path on" id="p2" d="M76 68 L121 68 L170 104"/>
+            <g><circle class="x-bg" cx="121" cy="68" r="7"/><path class="x-mark" d="M118.5 65.5l5 5M123.5 65.5l-5 5"/></g>
+            <circle class="dot" id="d1" cx="170" cy="32" r="2.5"/>
+            <circle class="dot on" id="d2" cx="170" cy="104" r="2.5"/>
+            <g class="hsm-node" id="n1" tabindex="0" role="button" aria-pressed="false" aria-label="Route to HSM 1">
+              <rect x="176" y="20" width="44" height="24" rx="3"/><text x="198" y="35" text-anchor="middle">HSM 1</text>
+            </g>
+            <g class="hsm-node on" id="n2" tabindex="0" role="button" aria-pressed="true" aria-label="Route to HSM 2">
+              <rect x="176" y="92" width="44" height="24" rx="3"/><text x="198" y="107" text-anchor="middle">HSM 2</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section class="tile t-limit" aria-labelledby="lim-h">
+        <h2 id="lim-h">Configurable Daily Transaction Limit <span class="readout" id="readout">20,000</span></h2>
+        <div class="ruler-wrap">
+          <div class="labels" id="labels" aria-hidden="true"></div>
+          <div class="ruler" id="ruler" role="slider" tabindex="0" aria-label="Daily transaction limit" aria-valuemin="10000" aria-valuemax="30000" aria-valuenow="20000" aria-valuetext="20,000">
+            <div class="pointer" id="pointer"></div>
+          </div>
+          <div class="scale-note"><span>Drag the ruler or use arrow keys</span></div>
+          <div class="limit-foot">
+            <div class="rules">
+              <h3>Why this limit</h3>
+              <ul>
+                <li><b>Floor, 10,000.</b> Keeps everyday purchases from being declined.</li>
+                <li><b>Ceiling, 30,000.</b> Caps the loss on a lost or cloned card until it is blocked.</li>
+                <li id="ruleKyc"><b>Above 20,000.</b> Needs full KYC on file, checked through CBS.</li>
+                <li><b>Compliance.</b> Must stay within regulator and Visa program limits.</li>
+              </ul>
+              <p class="limit-msg" id="limitMsg" aria-live="polite"></p>
+              <p class="limit-note">Draft policy wording. Confirm thresholds with your compliance team.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile t-cbs" aria-labelledby="cbs-h">
+        <h2 id="cbs-h">Auto Fetch CBS <button class="sw" id="cbsMaster" role="switch" aria-checked="true" aria-label="Enable Auto Fetch CBS"></button></h2>
+        <div class="cbs-body">
+          <svg class="diagram" viewBox="0 0 100 120" aria-hidden="true">
+            <line class="cbs-line" x1="50" y1="8" x2="50" y2="112"/>
+            <circle class="cbs-dot" cx="50" cy="8" r="2.5"/><circle class="cbs-dot" cx="50" cy="112" r="2.5"/>
+            <rect class="cbs-dia" x="22" y="32" width="56" height="56" rx="6" transform="rotate(45 50 60)"/>
+            <text class="cbs-txt" x="50" y="64" text-anchor="middle">CBS</text>
+          </svg>
+          <div class="fields">
+            <button class="field on" type="button" aria-pressed="true">Gender</button>
+            <button class="field on" type="button" aria-pressed="true">Customer full name</button>
+            <button class="field on" type="button" aria-pressed="true">Birth Date</button>
+            <button class="field" type="button" aria-pressed="false">Identify proof type</button>
+            <button class="field on" type="button" aria-pressed="true">KYC Mode<i></i></button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+
+  // ---------- theme ----------
+  var SUN = '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"/></svg>';
+  var MOON = '<svg viewBox="0 0 16 16"><path d="M13.5 9.6A5.8 5.8 0 016.4 2.5a5.8 5.8 0 107.1 7.1z"/></svg>';
+  var btn = document.getElementById('themeBtn');
+  function effective() {
+    var t = root.getAttribute('data-theme');
+    if (t === 'dark' || t === 'light') return t;
+    return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function paint() {
+    var dark = effective() === 'dark';
+    btn.innerHTML = dark ? SUN : MOON;
+    btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  try { var saved = localStorage.getItem('bb-theme'); if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved); } catch (e) {}
+  paint();
+  btn.addEventListener('click', function () {
+    var next = effective() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('bb-theme', next); } catch (e) {}
+    paint();
+  });
+  if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paint);
+
+  // ---------- sidebar ----------
+  var setupBtn = document.getElementById('setupBtn'), setupSub = document.getElementById('setupSub');
+  setupBtn.addEventListener('click', function () {
+    var open = setupBtn.getAttribute('aria-expanded') !== 'true';
+    setupBtn.setAttribute('aria-expanded', open);
+    setupSub.hidden = !open;
+  });
+  var win = document.getElementById('win'), menuBtn = document.getElementById('menuBtn');
+  menuBtn.addEventListener('click', function () {
+    var open = win.classList.toggle('menu-open');
+    menuBtn.setAttribute('aria-expanded', open);
+  });
+  document.querySelectorAll('.sub a').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.querySelectorAll('.sub a').forEach(function (x) { x.removeAttribute('aria-current'); });
+      a.setAttribute('aria-current', 'page');
+    });
+  });
+
+  // ---------- toggles / chips ----------
+  document.querySelectorAll('.sw').forEach(function (b) {
+    if (b.getAttribute('aria-checked') === 'true') b.parentNode.classList.add('on');
+    b.addEventListener('click', function () {
+      var on = b.getAttribute('aria-checked') !== 'true';
+      b.setAttribute('aria-checked', on);
+      b.parentNode.classList.toggle('on', on);
+    });
+  });
+  document.querySelectorAll('.chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      c.classList.toggle('off');
+      c.classList.add('flash');
+      setTimeout(function () { c.classList.remove('flash'); }, 350);
+    });
+  });
+
+  // ---------- CBS master switch ----------
+  var cbs = document.querySelector('.t-cbs'), master = document.getElementById('cbsMaster');
+  master.addEventListener('click', function () {
+    var off = master.getAttribute('aria-checked') !== 'true';
+    cbs.classList.toggle('off', off);
+    cbs.querySelectorAll('.field').forEach(function (b) { b.disabled = off; });
+  });
+  cbs.querySelectorAll('.field').forEach(function (f) {
+    f.addEventListener('click', function () {
+      var on = !f.classList.contains('on');
+      f.classList.toggle('on', on);
+      f.setAttribute('aria-pressed', on);
+    });
+  });
+
+  // ---------- HSM routing ----------
+  var P = { 1: document.getElementById('p1'), 2: document.getElementById('p2') };
+  var D = { 1: document.getElementById('d1'), 2: document.getElementById('d2') };
+  var N = { 1: document.getElementById('n1'), 2: document.getElementById('n2') };
+  function route(active) {
+    [1, 2].forEach(function (k) {
+      var on = k === active;
+      P[k].classList.toggle('on', on); D[k].classList.toggle('on', on);
+      N[k].classList.toggle('on', on); N[k].setAttribute('aria-pressed', on);
+    });
+  }
+  [1, 2].forEach(function (k) {
+    N[k].addEventListener('click', function () { route(k); });
+    N[k].addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); route(k); } });
+  });
+
+  // ---------- limit ruler ----------
+  var MIN = 8000, MAX = 32000, LO = 10000, HI = 30000, STEP = 500;
+  var ruler = document.getElementById('ruler'), pointer = document.getElementById('pointer');
+  var labels = document.getElementById('labels'), readout = document.getElementById('readout');
+  var value = 20000;
+  function pct(v) { return ((v - MIN) / (MAX - MIN)) * 100; }
+  for (var v = MIN; v <= MAX; v += STEP) {
+    var t = document.createElement('div');
+    var cls = v % 5000 === 0 ? 'l' : v % 1000 === 0 ? 'm' : '';
+    t.className = 'tick ' + cls;
+    t.style.left = pct(v) + '%';
+    t.style.height = cls === 'l' ? '26px' : cls === 'm' ? '16px' : '9px';
+    ruler.appendChild(t);
+  }
+  var labelEls = {};
+  [10000, 15000, 20000, 25000, 30000].forEach(function (v) {
+    var s = document.createElement('span');
+    s.textContent = v; s.style.left = pct(v) + '%';
+    labels.appendChild(s); labelEls[v] = s;
+  });
+  function set(v) {
+    value = Math.max(LO, Math.min(HI, Math.round(v / STEP) * STEP));
+    pointer.style.left = pct(value) + '%';
+    readout.textContent = value.toLocaleString('en-US');
+    ruler.setAttribute('aria-valuenow', value);
+    ruler.setAttribute('aria-valuetext', value.toLocaleString('en-US'));
+    Object.keys(labelEls).forEach(function (k) { labelEls[k].classList.toggle('hit', +k === value); });
+    document.getElementById('ruleKyc').classList.toggle('hit', value > 20000);
+    document.getElementById('limitMsg').innerHTML = 'Current limit <b>' + value.toLocaleString('en-US') + '</b> is in the ' + (value > 20000 ? 'high band: full KYC required.' : 'standard band: no extra checks.');
+  }
+  function fromEvent(e) {
+    var r = ruler.getBoundingClientRect();
+    set(MIN + Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * (MAX - MIN));
+  }
+  var dragging = false;
+  ruler.addEventListener('pointerdown', function (e) { dragging = true; ruler.setPointerCapture(e.pointerId); fromEvent(e); });
+  ruler.addEventListener('pointermove', function (e) { if (dragging) fromEvent(e); });
+  ruler.addEventListener('pointerup', function () { dragging = false; });
+  ruler.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); set(value + STEP); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); set(value - STEP); }
+  });
+  set(value);
+
+  // ---------- summary widgets (read live state) ----------
+  function refresh() {
+    document.getElementById('wLimit').textContent = (+ruler.getAttribute('aria-valuenow')).toLocaleString('en-US');
+    var h2 = N[2].classList.contains('on');
+    document.getElementById('wHsm').textContent = h2 ? 'HSM 2' : 'HSM 1';
+    document.getElementById('wHsmSub').textContent = (h2 ? 'HSM 1' : 'HSM 2') + ' on standby';
+    var cfgOn = document.querySelectorAll('.t-config .sw[aria-checked="true"]').length;
+    document.getElementById('wCfg').textContent = cfgOn + ' / ' + document.querySelectorAll('.t-config .sw').length;
+    var fOn = cbs.querySelectorAll('.field.on').length, off = cbs.classList.contains('off');
+    document.getElementById('wCbs').textContent = off ? 'Off' : fOn + ' / ' + cbs.querySelectorAll('.field').length;
+    document.getElementById('wCbsSub').textContent = off ? 'Auto fetch disabled' : 'Auto fetch on';
+  }
+  ['click', 'pointermove', 'keydown'].forEach(function (ev) { document.addEventListener(ev, refresh); });
+  refresh();
+})();
+</script>
