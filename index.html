@@ -282,12 +282,13 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
 .labels { position: relative; height: 22px; font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
 .labels span { position: absolute; top: 0; transform: translateX(-50%); transition: color .15s; letter-spacing: .02em; }
 .labels span.hit { color: var(--accent); }
-.ruler { position: relative; height: 46px; touch-action: none; cursor: ew-resize; user-select: none; margin-top: 4px; }
-.ruler .tick { position: absolute; top: 10px; width: 1px; background: var(--faint); transform: translateX(-.5px); }
+.ruler { position: relative; height: 72px; touch-action: none; cursor: ew-resize; user-select: none; margin-top: 4px; }
+.ruler .tick { position: absolute; top: 14px; width: 1px; background: var(--faint); transform: translateX(-.5px); }
 .ruler .tick.m { background: var(--tick-m); }
 .ruler .tick.l { background: var(--ink-2); }
 .ruler .pointer { position: absolute; top: 0; bottom: 4px; width: 2px; margin-left: -1px; background: var(--accent); border-radius: 1px; box-shadow: 0 0 0 3px var(--accent-soft); }
-.bands { position: relative; height: 38px; margin-bottom: 14px; }
+.labels { margin-top: auto; }
+.bands { position: relative; height: 44px; margin-bottom: 16px; }
 .band { position: absolute; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2); font-size: 10.5px; color: var(--muted); transition: border-color .15s, background .15s, color .15s; }
 .band em { font-style: normal; font-size: 10px; color: var(--muted); }
 .band span { font-weight: 500; }
@@ -295,10 +296,6 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
 .band.high { left: 50%; width: 41.667%; }
 .band.on { border-color: var(--accent); background: var(--accent-soft); }
 .band.on span { color: var(--ink); }
-.lstats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
-.lstat { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); display: flex; flex-direction: column; gap: 4px; }
-.lstat span { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.lstat b { font: 500 15px var(--mono); color: var(--ink); }
 .scale-note { margin-top: 12px; padding-bottom: 14px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--muted); }
 
 /* CBS */
@@ -489,11 +486,6 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
             <div class="band std" id="bandStd"><span>Standard band</span><em>10,000 to 20,000</em></div>
             <div class="band high" id="bandHigh"><span>High band</span><em>Full KYC above 20,000</em></div>
           </div>
-          <div class="lstats">
-            <div class="lstat"><span>Selected limit</span><b id="sLimit">20,000</b></div>
-            <div class="lstat"><span>Headroom to ceiling</span><b id="sHead">10,000</b></div>
-            <div class="lstat"><span>Share of ceiling</span><b id="sShare">67%</b></div>
-          </div>
           <div class="limit-foot">
             <div class="rules">
               <h3>Why this limit <span title="Confirm thresholds with your compliance team">Draft</span></h3>
@@ -648,7 +640,7 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
     var cls = v % 5000 === 0 ? 'l' : v % 1000 === 0 ? 'm' : '';
     t.className = 'tick ' + cls;
     t.style.left = pct(v) + '%';
-    t.style.height = cls === 'l' ? '26px' : cls === 'm' ? '16px' : '9px';
+    t.style.height = cls === 'l' ? '40px' : cls === 'm' ? '24px' : '14px';
     ruler.appendChild(t);
   }
   var labelEls = {};
@@ -667,9 +659,6 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
     document.getElementById('ruleKyc').classList.toggle('hit', value > 20000);
     document.getElementById('bandStd').classList.toggle('on', value <= 20000);
     document.getElementById('bandHigh').classList.toggle('on', value > 20000);
-    document.getElementById('sLimit').textContent = value.toLocaleString('en-US');
-    document.getElementById('sHead').textContent = (HI - value).toLocaleString('en-US');
-    document.getElementById('sShare').textContent = Math.round(value / HI * 100) + '%';
     document.getElementById('limitMsg').innerHTML = 'Current limit <b>' + value.toLocaleString('en-US') + '</b> is in the ' + (value > 20000 ? 'high band: full KYC required.' : 'standard band: no extra checks.');
   }
   function fromEvent(e) {
