@@ -291,7 +291,18 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
 
 /* CBS */
 .t-cbs { grid-area: cbs; display: flex; flex-direction: column; }
-.cbs-body { flex: 1; display: grid; grid-template-columns: .7fr 1.45fr; align-items: center; padding: 8px 14px 12px 6px; gap: 6px; transition: opacity .2s; }
+.cbs-body { flex: 1; display: grid; grid-template-columns: .8fr 1.4fr; grid-template-rows: auto 1fr; align-items: center; padding: 14px 16px 16px; gap: 14px 12px; transition: opacity .2s; }
+.cbs-body svg.diagram { max-width: 96px; margin-inline: auto; }
+.record { grid-column: 1 / -1; align-self: end; border-top: 1px solid var(--line); padding-top: 12px; }
+.record h3 { margin: 0 0 6px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.record h3 span { letter-spacing: .04em; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: var(--panel-2); border: 1px solid var(--line); }
+.rlist { margin: 0; }
+.rrow { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; font-size: 10.5px; border-bottom: 1px dashed var(--line); }
+.rrow:last-child { border-bottom: 0; }
+.rrow dt { color: var(--muted); }
+.rrow dd { margin: 0; color: var(--ink); font-family: var(--mono); font-size: 10px; text-align: right; }
+.rrow.miss dd { color: var(--faint); font-family: var(--font); }
+.rnote { margin: 8px 0 0; font-size: 10px; color: var(--muted); }
 .t-cbs.off .cbs-body { opacity: .5; }
 .t-cbs.off .field { pointer-events: none; }
 .fields { display: flex; flex-direction: column; gap: 8px; }
@@ -495,6 +506,17 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
             <button class="field" type="button" aria-pressed="false">Identify proof type</button>
             <button class="field on" type="button" aria-pressed="true">KYC Mode<i></i></button>
           </div>
+          <div class="record">
+            <h3>Fetched record <span>Sample</span></h3>
+            <dl class="rlist" id="rlist">
+              <div class="rrow"><dt>Gender</dt><dd></dd></div>
+              <div class="rrow"><dt>Customer full name</dt><dd></dd></div>
+              <div class="rrow"><dt>Birth Date</dt><dd></dd></div>
+              <div class="rrow"><dt>Identify proof type</dt><dd></dd></div>
+              <div class="rrow"><dt>KYC Mode</dt><dd></dd></div>
+            </dl>
+            <p class="rnote">Example values. Real values come from CBS when fetching is on.</p>
+          </div>
         </div>
       </section>
     </main>
@@ -652,6 +674,13 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
     var fOn = cbs.querySelectorAll('.field.on').length, off = cbs.classList.contains('off');
     document.getElementById('wCbs').textContent = off ? 'Off' : fOn + ' / ' + cbs.querySelectorAll('.field').length;
     document.getElementById('wCbsSub').textContent = off ? 'Auto fetch disabled' : 'Auto fetch on';
+    var sample = ['Female', 'Priya Nair', '14 Aug 1992', 'Passport', 'Full KYC'];
+    var fields = cbs.querySelectorAll('.field');
+    document.querySelectorAll('#rlist .rrow').forEach(function (r, i) {
+      var on = fields[i].classList.contains('on');
+      r.classList.toggle('miss', !on);
+      r.querySelector('dd').textContent = on ? sample[i] : 'Not fetched';
+    });
   }
   ['click', 'pointermove', 'keydown'].forEach(function (ev) { document.addEventListener(ev, refresh); });
   refresh();
