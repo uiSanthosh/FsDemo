@@ -291,8 +291,8 @@ svg.diagram { width: 100%; height: auto; display: block; overflow: visible; }
 .band { position: absolute; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2); font-size: 10.5px; color: var(--muted); transition: border-color .15s, background .15s, color .15s; }
 .band em { font-style: normal; font-size: 10px; color: var(--muted); }
 .band span { font-weight: 500; }
-.band.std { left: 8.333%; width: 41.667%; }
-.band.high { left: 50%; width: 41.667%; }
+.band.std { left: 0; width: calc(50% - 3px); }
+.band.high { left: calc(50% + 3px); right: 0; }
 .band.on { border-color: var(--accent); background: var(--accent-soft); }
 .band.on span { color: var(--ink); }
 .scale-note { margin-top: 10px; padding-bottom: 0; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--muted); }
